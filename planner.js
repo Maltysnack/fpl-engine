@@ -413,6 +413,7 @@
             budget: newState.budget,
             clubCount: newState.clubCount,
             totalScore: s.totalScore + xiScore,
+            firstScore: depth === 0 ? xiScore : s.firstScore,
             firstMove: depth === 0 ? { type: 'hold' } : s.firstMove,
             ...inherit(s)
           });
@@ -432,6 +433,7 @@
             budget: newState.budget,
             clubCount: newState.clubCount,
             totalScore: s.totalScore + xiScore - newState.hitsPaid,
+            firstScore: depth === 0 ? xiScore - newState.hitsPaid : s.firstScore,
             firstMove: depth === 0 ? { type: 'transfer', out: m.out, in: m.in, sellPrice: m.sellPrice, buyPrice: m.buyPrice } : s.firstMove,
             ...inherit(s)
           });
@@ -475,6 +477,7 @@
               budget: newState.budget,
               clubCount: newState.clubCount,
               totalScore: s.totalScore + xiScore - newState.hitsPaid,
+              firstScore: depth === 0 ? xiScore - newState.hitsPaid : s.firstScore,
               firstMove: depth === 0 ? { type: 'transferN', pairs: m.pairs } : s.firstMove,
               ...inherit(s)
             });
@@ -482,9 +485,12 @@
         }
       }
 
-      // Prune to beam width.
+      // Prune to beam width. opts.firstFilter (off by default) restricts the
+      // first move, so callers can price alternatives such as "hold" or "two
+      // transfers" with the same search.
       nextBeam.sort((a, b) => b.totalScore - a.totalScore);
-      beam = nextBeam.slice(0, beamWidth);
+      const kept = depth === 0 && opts.firstFilter ? nextBeam.filter(x => opts.firstFilter(x.firstMove)) : nextBeam;
+      beam = kept.slice(0, beamWidth);
       if (!beam.length) break;
     }
 
@@ -492,11 +498,29 @@
     // gh#78: callers comparing two starting states (live dead-asset rule) need
     // the plan's horizon total, not just the first move. Off by default so the
     // backtest return shape is byte-identical.
-    if (opts.returnTotal) return Object.assign({}, beam[0].firstMove, { _total: beam[0].totalScore });
+    if (opts.returnTotal) return Object.assign({}, beam[0].firstMove, { _total: beam[0].totalScore, _first: beam[0].firstScore });
     return beam[0].firstMove;
   }
 
-  const api = { plan, predictedXIScore, enumerateMoves, enumerateNTransferMoves, FT_CAP, MAX_SWAP_N };
+  // Ranked alternatives for the first move: hold, best single, best double,
+  // best triple, each with its first-GW and horizon totals. Read-only; the
+  // chosen move is still plan()'s.
+  const MOVE_SIZE = m => !m || m.type === 'hold' ? 0 : m.type === 'transfer' ? 1 : m.pairs.length;
+  function planAlternatives(squad, gw, a, b, c, players, state, opts) {
+    const chosen = plan(squad, gw, a, b, c, players, state, Object.assign({}, opts, { returnTotal: true }));
+    const out = [];
+    for (const n of [0, 1, 2, 3]) {
+      const r = plan(squad, gw, a, b, c, players, state, Object.assign({}, opts, { returnTotal: true, firstFilter: m => MOVE_SIZE(m) === n }));
+      if (!r || r._total == null || MOVE_SIZE(r) !== n) continue;
+      out.push({ size: n, move: r, first: r._first, total: r._total });
+    }
+    out.sort((x, y) => y.total - x.total);
+    const chosenSize = MOVE_SIZE(chosen);
+    for (const o of out) o.chosen = o.size === chosenSize;
+    return { chosen, alternatives: out };
+  }
+
+  const api = { plan, planAlternatives, predictedXIScore, enumerateMoves, enumerateNTransferMoves, FT_CAP, MAX_SWAP_N };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else if (typeof window !== 'undefined') window.fplPlanner = api;
 })();
