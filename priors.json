@@ -1,0 +1,27 @@
+{
+  "slope": 0.564,
+  "intercept": 1.548,
+  "posOffset": {
+    "1": -0.037,
+    "2": -0.046,
+    "3": 0.014,
+    "4": 0.24
+  },
+  "train": {
+    "sources": [
+      "history",
+      "snapshot",
+      "vaastav"
+    ],
+    "gws": {
+      "start": 28,
+      "end": 37
+    },
+    "n": 39794,
+    "maeBefore": 2.481,
+    "maeAfter": 2.449,
+    "biasBefore": 0.077,
+    "biasAfter": 0.017,
+    "fittedAt": "2026-07-18T08:05:57.890Z"
+  }
+}

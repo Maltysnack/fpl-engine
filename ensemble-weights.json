@@ -1,0 +1,58 @@
+{
+  "weights": {
+    "1": {
+      "default": 0.367,
+      "xg_pure": 0.367,
+      "recency_pure": -0.233,
+      "bps_magnet": 0.267,
+      "xg_underlying": 0.267,
+      "form_heavy": -0.033
+    },
+    "2": {
+      "default": -0.003,
+      "xg_pure": 1.062,
+      "recency_pure": 0.007,
+      "bps_magnet": -0.018,
+      "xg_underlying": -0.013,
+      "form_heavy": -0.033
+    },
+    "3": {
+      "default": -0.003,
+      "xg_pure": 1.062,
+      "recency_pure": 0.007,
+      "bps_magnet": -0.018,
+      "xg_underlying": -0.013,
+      "form_heavy": -0.033
+    },
+    "4": {
+      "default": -0.003,
+      "xg_pure": 1.002,
+      "recency_pure": 0.007,
+      "bps_magnet": 0.002,
+      "xg_underlying": -0.013,
+      "form_heavy": 0.007
+    }
+  },
+  "variants": [
+    "default",
+    "xg_pure",
+    "recency_pure",
+    "bps_magnet",
+    "xg_underlying",
+    "form_heavy"
+  ],
+  "train": {
+    "loss": "mae",
+    "sources": [
+      "history",
+      "snapshots",
+      "vaastav"
+    ],
+    "gws": {
+      "start": 3,
+      "end": 36
+    },
+    "n": 35682,
+    "fittedAt": "2026-05-15T12:22:54.591Z"
+  }
+}

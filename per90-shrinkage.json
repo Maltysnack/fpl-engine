@@ -1,0 +1,56 @@
+{
+  "built_at": "2026-05-24T11:21:05.833Z",
+  "source": "api-cache.json",
+  "k": 5,
+  "min_minutes_filter": 900,
+  "features_by_pos": {
+    "1": [
+      "csRate",
+      "savesPer90",
+      "xgi90",
+      "xgc90"
+    ],
+    "2": [
+      "csRate",
+      "goalsPer90",
+      "assistsPer90",
+      "xgi90",
+      "xgc90"
+    ],
+    "3": [
+      "goalsPer90",
+      "assistsPer90",
+      "xgi90"
+    ],
+    "4": [
+      "goalsPer90",
+      "assistsPer90",
+      "xgi90"
+    ]
+  },
+  "means": {
+    "1": {
+      "csRate": 0.176382,
+      "savesPer90": 2.796953,
+      "xgi90": 0.000833,
+      "xgc90": 1.415
+    },
+    "2": {
+      "csRate": 0.188669,
+      "goalsPer90": 0.041371,
+      "assistsPer90": 0.077008,
+      "xgi90": 0.11584,
+      "xgc90": 1.40208
+    },
+    "3": {
+      "goalsPer90": 0.147574,
+      "assistsPer90": 0.166645,
+      "xgi90": 0.276133
+    },
+    "4": {
+      "goalsPer90": 0.389747,
+      "assistsPer90": 0.117055,
+      "xgi90": 0.452353
+    }
+  }
+}
