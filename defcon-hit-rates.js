@@ -5,7 +5,7 @@
 // produces, per player, the fraction of 60+-minute appearances in which the
 // player hit the FPL DefCon points threshold (DEF >= 10 actions, MID/FWD >= 12).
 // That rate is what predict.js multiplies by 2pts to get the live-only DefCon EV
-// term — replacing the old Poisson bridge, which could not be calibrated.
+// term, replacing the old Poisson bridge, which could not be calibrated.
 //
 // Keyed by FPL's permanent `code` so the table survives the 2026-27 id reshuffle.
 // Per-position pooled averages give a cold-start fallback for unseen players.
@@ -71,7 +71,7 @@ async function main() {
       elig++;
       if (h.defensive_contribution >= threshold) hits++;
     }
-    if (elig === 0) { skippedNoElig++; continue; }      // no signal — omit
+    if (elig === 0) { skippedNoElig++; continue; }      // no signal, omit
 
     by_code[p.code] = { rate: +(hits / elig).toFixed(4), n: elig, pos };
     if (posAcc[pos]) { posAcc[pos].hits += hits; posAcc[pos].elig += elig; }

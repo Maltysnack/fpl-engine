@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * gh#58 — empirical-Bayes shrinkage fitter for DefCon per-player hit-rates.
+ * gh#58, empirical-Bayes shrinkage fitter for DefCon per-player hit-rates.
  *
  * Beta-binomial method-of-moments:
  *   Each player has (hits_i, n_i) with p_i = hits_i / n_i.
@@ -18,7 +18,7 @@
  * Outputs: defcon-shrinkage.json = { [pos]: { mu, n_eff, sample_size, sources... } }.
  *
  * Filter: only fit using players with n >= MIN_N to avoid bootstrap noise.
- * Skip pos 1 (GK) — no DefCon term applies.
+ * Skip pos 1 (GK), no DefCon term applies.
  */
 const fs = require('fs');
 const path = require('path');

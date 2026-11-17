@@ -10,12 +10,12 @@
 // Decision philosophy:
 //   - Predicted points already encode double gameweeks: a DGW player's
 //     prediction sums both fixtures, so a DGW captain / bench / XI is already
-//     worth ~2x. There is NO separate "is this a DGW?" gate — option-pricing
+//     worth ~2x. There is NO separate "is this a DGW?" gate, option-pricing
 //     over the raw predicted score handles timing and naturally favours DGWs.
 //   - TC: fire on a captain-score outlier. BB: fire on a bench-score outlier.
-//   - FH: dual trigger — a bad week (own XI projects very low) fires now; a
+//   - FH: dual trigger, a bad week (own XI projects very low) fires now; a
 //     big swing to the best-possible XI fires via option-pricing.
-//   - WC: rescue chip — see wcShouldFire.
+//   - WC: rescue chip, see wcShouldFire.
 //   - Forecast a limited lookahead window, the way a real manager sees only
 //     the next few GWs. Hard deadline: force-fire TC/BB at the half deadline.
 
@@ -46,17 +46,17 @@
     minFHEarlyH2:   22,
     fhDeadlineH1:   19,
     fhDeadlineH2:   37,
-    // Numeric floors (apply to both halves). gh#36: FH dual trigger —
+    // Numeric floors (apply to both halves). gh#36: FH dual trigger, 
     // fhRescueXIPred = bad-outlier floor (fire now), fhMinUplift = good-outlier
     // floor (fire via option-pricing). Fitted by fh-sweep.js post-gh#41 (against
     // the corrected cap-aware FH metric): fhMinUplift 4 and 8 tie for best and
-    // it degrades sharply above 12 (16→20 costs ~185 NET) — 8 chosen as the
+    // it degrades sharply above 12 (16→20 costs ~185 NET), 8 chosen as the
     // firmer of the tied-optimal pair. fhRescueXIPred + optionK near-inert.
     fhMinUplift:       8,
     fhRescueXIPred:    40,
     bbBenchThreshold:  16,
     optionK:         1.0,
-    // WC (gh#35): rescue chip. Fires purely on a low projected XI — no
+    // WC (gh#35): rescue chip. Fires purely on a low projected XI, no
     // option-pricing, no deadline force-fire. An unused WC is acceptable;
     // the chip exists to escape a bad squad, not to chase EV.
     minWCEarlyH1:    4,
@@ -104,7 +104,7 @@
 
   // WC fire rule (gh#35). Wildcard is a rescue chip: fire it the first time
   // the projected XI over the lookahead window drops below the trigger, within
-  // this half's window. No option-pricing and no deadline force-fire — leaving
+  // this half's window. No option-pricing and no deadline force-fire, leaving
   // a WC unused is fine, it only exists to escape a structurally bad squad.
   // xiPred should be the lookahead-window mean XI prediction, not a single GW
   // (a one-week dip is usually a blank GW, which is Free Hit's job).
@@ -142,12 +142,12 @@
       tc:  { used: chipState[`tc${half}Used`], early: O[`minTCEarlyH${half}`], deadline: O[`tcDeadlineH${half}`] },
       bb:  { used: chipState[`bb${half}Used`], early: O[`minBBEarlyH${half}`], deadline: O[`bbDeadlineH${half}`] },
       fh:  { used: chipState[`fh${half}Used`], early: O[`minFHEarlyH${half}`], deadline: O[`fhDeadlineH${half}`] }
-      // WC has no early/deadline cfg row — wcShouldFire reads its window directly.
+      // WC has no early/deadline cfg row, wcShouldFire reads its window directly.
     };
 
     // TC decision (gh#36). The DGW is already baked into captainPred /
     // captainCeiling (a DGW captain's prediction sums both fixtures), so there
-    // is no separate DGW gate — option-pricing over the raw score handles
+    // is no separate DGW gate, option-pricing over the raw score handles
     // timing and naturally favours DGWs (~2x score). Force-fire at the half
     // deadline if still unused.
     const scoreTC = g => (g.captainCeiling != null && g.captainCeiling > 0)
@@ -178,14 +178,14 @@
     }
 
     // FH decision (gh#36). Dual trigger:
-    //   bad-outlier  — this GW's own XI projects below fhRescueXIPred (a blank
+    //   bad-outlier, this GW's own XI projects below fhRescueXIPred (a blank
     //                  or wipeout week). Fire immediately; a blank cannot be
     //                  waited out. Distinct from WC, which triggers on the
     //                  lookahead-window MEAN (a structurally bad squad).
-    //   good-outlier — uplift to the best-possible XI >= fhMinUplift (a big
+    //   good-outlier, uplift to the best-possible XI >= fhMinUplift (a big
     //                  one-week swing, e.g. a full-DGW XI). Option-pricing
     //                  holds for a bigger swing later in the half.
-    // No xiBlanks gate — a low single-GW xiPred is the better "bad week" signal.
+    // No xiBlanks gate, a low single-GW xiPred is the better "bad week" signal.
     if (!cfg.fh.used && currentGw >= cfg.fh.early && currentGw <= cfg.fh.deadline) {
       const upliftOf = g => Math.max(0, (g.freeHitXIPred || 0) - (g.xiPred || 0));
       if (thisGw.xiPred != null && thisGw.xiPred < O.fhRescueXIPred) {
@@ -198,7 +198,7 @@
       }
     }
 
-    // WC decision (gh#35). Rescue chip — pure threshold on the projected XI.
+    // WC decision (gh#35). Rescue chip, pure threshold on the projected XI.
     // thisGw.xiPred should already be the lookahead-window mean.
     if (wcShouldFire(currentGw, thisGw.xiPred, chipState, O)) useWC = true;
 

@@ -68,8 +68,8 @@
   const MAX_SWAP_N = 5;
 
   // Pick the best legal XI by predicted, returning its score plus a captain
-  // bonus (best XI player doubled). Enumerates planFormations — one shape when
-  // locked, all 8 when fluid — and takes the highest-scoring shape. (Used for
+  // bonus (best XI player doubled). Enumerates planFormations, one shape when
+  // locked, all 8 when fluid, and takes the highest-scoring shape. (Used for
   // in-beam scoring; auto-subs and vice-captain happen at execution.)
   // gh#71: weight on bench points. 0 reproduces the historical XI-only scoring
   // exactly (the locked default), so this is inert until deliberately raised.
@@ -163,7 +163,7 @@
     const recentlyIn    = new Set(((state.recentTransfers || []).filter(t => t.inAt  >= (state.currentGw || 0) - MEMORY_WINDOW)).map(t => t.inId));
 
     // gh#37: thread _maxPerClub (was hardcoded > 3). Singles that violate
-    // the cap as standalone moves are still pruned here — illegal singles
+    // the cap as standalone moves are still pruned here, illegal singles
     // can't be applied directly. The N-combinator gets a SEPARATELY-built
     // wider atom pool (see enumerateChainAtoms below) that includes "would-
     // be-illegal-alone" moves so chained-legal N-tuples can form.

@@ -4,6 +4,9 @@ Points prediction, transfer planner, chip logic and season simulator for Fantasy
 Premier League. The engine does no network access when deciding: you pass the
 data in. Fitted files ship as they are.
 
+I designed, directed and tested the engine, and built it with Claude Code as my
+development tool.
+
 ## Run it on your own team
 
 ```bash
