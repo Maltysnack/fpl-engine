@@ -476,7 +476,7 @@ function wildcardRebuild(scored, budgetTotal, priceLambda) {
     }
   }
   // Pass 2: fill remaining slots by points-per-million (gh#43). Raw-points
-  // greedy is the textbook-bad knapsack heuristic — it strands the budget on
+  // greedy is the textbook-bad knapsack heuristic, it strands the budget on
   // one expensive pick. Ratio greedy spends efficiently; cost-floor reservation
   // in tryAddTo still guarantees enough budget for cheap backfill. Mirrors the
   // anchors-then-ratio-fill pattern squadBalanced uses.
@@ -523,7 +523,7 @@ function tiltedValue(predicted, price, lambda) {
 
 // gh#43: λ-tilted squad construction. Greedy fill of the 15-man quota, every
 // position ranked by tiltedValue. Mirrors squadValue's structure but with the
-// tilt as the sole ranking key and no per-position price caps — λ is the
+// tilt as the sole ranking key and no per-position price caps, λ is the
 // continuous concentration control that supersedes those ad-hoc caps.
 // `scored` items need { id, element_type, team, price, predicted }.
 function buildTilted(scored, lambda, budgetTotal) {
@@ -582,7 +582,7 @@ const FORMATION_NAMES = Object.keys(LEGAL_FORMATIONS);
 const POS_MIN = { 2: 3, 3: 2, 4: 1 };   // outfield XI minimums
 const POS_MAX = { 2: 5, 3: 5, 4: 3 };   // outfield XI maximums
 
-// gh#44: legality of an auto-sub — bring a bench player on line posY in for a
+// gh#44: legality of an auto-sub, bring a bench player on line posY in for a
 // blanked XI player on line posX, given the XI's current per-line counts. A GK
 // can only be replaced by a GK. A same-position sub never changes line counts.
 // A cross-position sub is legal iff the outgoing line stays >= its minimum and
@@ -605,7 +605,7 @@ function permute(arr) {
 
 // Nominate the XI for a fixed formation: top-N predicted per position line.
 // byPos must be pre-sorted by predicted descending. Bench is position-grouped
-// [GK, DEF, MID, FWD] — the legacy ordering.
+// [GK, DEF, MID, FWD], the legacy ordering.
 function nominateXI(byPos, formation) {
   const xi = [], bench = [];
   for (const pos of [1, 2, 3, 4]) {
@@ -618,7 +618,7 @@ function nominateXI(byPos, formation) {
 // Run the FPL auto-sub cascade on a nominated XI using ACTUAL minutes. For each
 // XI player who got 0 minutes, bring in the first eligible bench player (one who
 // played) whose entry keeps the XI legal. `samePositionFirst` mirrors the legacy
-// heuristic — prefer a same-position sub over a legal cross-position one; when
+// heuristic, prefer a same-position sub over a legal cross-position one; when
 // false the bench is consumed in strict order (already optimised upstream).
 function runAutoSubs(xi, bench, samePositionFirst) {
   const counts = { 2: 0, 3: 0, 4: 0 };
@@ -653,7 +653,7 @@ function runAutoSubs(xi, bench, samePositionFirst) {
 // player, with blank probability q = 1 - avail, the expected contribution is
 // avail*pred (they play) plus (1-avail)*replacement (they blank), where the
 // replacement is the first bench player in the given order who is a legal sub,
-// itself weighted by its own avail. Single-blank independence — multi-blank
+// itself weighted by its own avail. Single-blank independence, multi-blank
 // bench-exhaustion is negligible at starter availability levels.
 function xiExpectedValue(xi, benchOrder) {
   const counts = { 2: 0, 3: 0, 4: 0 };
@@ -752,8 +752,8 @@ function bestLegalXI(squad15, scoreFn) {
   return { total: xi.reduce((s, p) => s + scoreFn(p), 0), xi };
 }
 
-// Free Hit XI (gh#41). A real Free Hit fields a LEGAL 15-man squad — 2/5/5/3,
-// within the club cap, within budget — not an unconstrained all-star XI. Build
+// Free Hit XI (gh#41). A real Free Hit fields a LEGAL 15-man squad, 2/5/5/3,
+// within the club cap, within budget, not an unconstrained all-star XI. Build
 // the best legal 15 by `key` (wildcardRebuild handles 2/5/5/3 + cap + budget),
 // then return its best XI. `key` = 'predicted' (decision signal) or 'actual'
 // (scoring). Returns { total, xi }, where xi carries the full scored objects.
@@ -972,7 +972,7 @@ function simulate(players, season, variantName, ctx, ensembleWeights, opts) {
   // gain + lookahead-window predicted scores. Realized actuals filled in at
   // end of season by reading from player.history. Only collected when opts.trace.
   const traceLog = [];
-  // gh#44: per-GW formation trace — { gw, formation, dgw }. Always collected
+  // gh#44: per-GW formation trace, { gw, formation, dgw }. Always collected
   // (38 small rows); consumed by formation-analyze.js.
   const formationLog = [];
   const TRACE_HORIZON = opts.planHorizon || 4;
@@ -1099,7 +1099,7 @@ function simulate(players, season, variantName, ctx, ensembleWeights, opts) {
           recentTransfers: rt, currentGw: gw, _maxPerClub: _activeMaxPerClub },
         returnTotal ? Object.assign({ returnTotal: true }, planOpts) : planOpts);
       // gh#71 dead-asset modes. 'off' (default) is the historical backtest.
-      // 'plan' mirrors live bot-decide: on a planner hold with an FT in hand,
+      // 'plan' mirrors the live decision rule: on a planner hold with an FT in hand,
       // clear a dead asset only if the plan from the new state is not worse.
       // 'hold' clears on a hold unconditionally. 'debt' clears it first
       // whenever an FT is in hand, then the planner plans from the new state.
@@ -1214,7 +1214,7 @@ function simulate(players, season, variantName, ctx, ensembleWeights, opts) {
     // Score this GW. Compute actuals + preds for every player in the league.
     const scored = gwActualsAndPreds(players, gw, ctx, variantName, ensembleWeights);
 
-    // Pick XI from squad (gh#44: formation policy — locked / max / robust).
+    // Pick XI from squad (gh#44: formation policy, locked / max / robust).
     const { xi, bench, formation, subsFired, blanksUncovered } = pickXI(squad, scored, opts.formationPolicy);
     autoSubsFired += subsFired;
     benchBlanksUncovered += blanksUncovered;
@@ -1259,7 +1259,7 @@ function simulate(players, season, variantName, ctx, ensembleWeights, opts) {
       // Issue #27 (closed negative): tried weighting captainScore by haul
       // probability (0.4 * p10 + 0.2 * p15, then 0.8 * p10 + 0.4 * p15).
       // Both produced ~0 NET delta in backtest because haul probabilities
-      // are derived from pred_next via empirical lookup — they encode no
+      // are derived from pred_next via empirical lookup, they encode no
       // independent information. Captain pick is already near-optimal.
       captainScore = p => {
         const pos = p.element_type;
@@ -1280,7 +1280,7 @@ function simulate(players, season, variantName, ctx, ensembleWeights, opts) {
     // Free Hit signals:
     //   xiBlanks: how many XI players got 0 minutes this GW (couldn't play,
     //   no fixture, injured-without-news). Triggers FH if >= threshold.
-    //   freeHitXIPts: the best XI from a LEGAL Free Hit 15 (gh#41 — within the
+    //   freeHitXIPts: the best XI from a LEGAL Free Hit 15 (gh#41, within the
     //   budget + club cap, not an unconstrained all-star team).
     const xiBlanks = xi.filter(x => (x.minutes || 0) === 0).length;
     // FH budget: the standard £100m. Squad value + bank drifts only a few %
@@ -1366,7 +1366,7 @@ function simulate(players, season, variantName, ctx, ensembleWeights, opts) {
       if (!inHalf.length) return null;
       return inHalf.reduce((b, d) => scoreFn(d) > scoreFn(b) ? d : b).gw;
     };
-    // Exclude WC GWs (decided inline) — one chip per GW.
+    // Exclude WC GWs (decided inline), one chip per GW.
     const notWc = d => d.gw !== wc1Gw && d.gw !== wc2Gw;
     const tcCands = gwData.filter(d => d.captainPred && notWc(d));
     const bbCands = gwData.filter(notWc);
@@ -1495,7 +1495,7 @@ async function main() {
   const hArg         = args.find(a => a.startsWith('--horizon='));
   // Issue #29: sweep over h ∈ {2,3,4,5,6} × b ∈ {2,4,6,8} on bps_magnet × 3
   // seasons. h=5 b=6 wins on stability: avg 2304 (vs h=4 b=4 = 2265), min 2248
-  // (vs 2104), spread 86 (vs 249). For an autonomous bot the floor matters
+  // (vs 2104), spread 86 (vs 249). For a whole season the floor matters
   // more than the peak; h=2 ties on avg but with huge variance (spread 357).
   // Bumped from 5 → 7 after issue #34 (FT cap 2 → 5 + N-transfer enumeration).
   // Banking 5 FTs only pays off if the planner can see past the bank window;
@@ -1619,8 +1619,8 @@ if (require.main === module) {
 module.exports = { simulate, buildInitialSquad, SQUAD_STRATEGIES, BUDGET_TOTAL, MAX_PER_CLUB, SQUAD_QUOTA, FORMATION,
   // gh#44: formation policy names + table, exposed for formation-study.js.
   FORMATION_NAMES, LEGAL_FORMATIONS, pickXI,
-  // Exposed for ml/build-dataset.js (gh#5). Additive only — no behaviour change.
+  // Exposed for ml/build-dataset.js (gh#5). Additive only, no behaviour change.
   synthesisePlayer, predictWithVariant,
-  // Exposed so the live bot's Free Hit pricing can be compared against the
+  // Exposed so live Free Hit pricing can be compared against the
   // backtest's on identical input (GW6 2026-27 post mortem).
   bestFreeHitXI, wildcardRebuild, bestLegalXI };

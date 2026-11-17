@@ -39,7 +39,7 @@
       bps_scale: 0.030
     },
 
-    // Defcon-magnet: leans into the DefCon EV term — drops the confidence
+    // Defcon-magnet: leans into the DefCon EV term, drops the confidence
     // haircut to 1.0 (base default 0.7) so defensive-action specialists are
     // valued at their full expected DefCon points. Only differs in live play;
     // the term is zero in backtests, which lack defensive_contribution data.

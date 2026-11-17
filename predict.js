@@ -33,7 +33,7 @@
     catch (e) { residualModel = null; }
   }
 
-  // gh#42: empirical DefCon hit-rate tables (Node-only — the browser bundle
+  // gh#42: empirical DefCon hit-rate tables (Node-only, the browser bundle
   // keeps the Poisson cold-start fallback). `carryover` is the 2025-26 archive
   // (defcon-hit-rates.js output); the season-to-date archive arrives per call
   // as ctx.defconLive (optional). A missing file never crashes predict.js.
@@ -83,7 +83,7 @@
     fwd_recency:    0.65, fwd_att: 0.35,
     pen1: 1.0,  pen2: 0.3,  fk1: 0.20, ck1: 0.25,
     bps_scale: 0.012,
-    defcon_confidence: 0.7,  // haircut on the DefCon EV term — it can't be backtested
+    defcon_confidence: 0.7,  // haircut on the DefCon EV term, it can't be backtested
     rollmins_very_low_thresh: 10, rollmins_very_low_mult: 0.10,  // gh#57: 0 mins recent -> strong discount
     rollmins_low_thresh: 30, rollmins_low_mult: 0.5,
     rollmins_mid_thresh: 60, rollmins_mid_mult: 0.85,
@@ -128,7 +128,7 @@
 
   // gh#67: `currentGw` is the bound that makes this safe against a cache which
   // has mixed seasons together. GW ids restart at 1 each season, so a row for a
-  // GW at or beyond the one being predicted cannot belong to this season — it is
+  // GW at or beyond the one being predicted cannot belong to this season, it is
   // prior-season carryover. Sorting alone does not save us: sorted ascending,
   // last season's GW31-37 land at the END and win the slice over this season's
   // GW1. sync.js keeps the cache clean; this is the second line of defence for
@@ -163,7 +163,7 @@
   // many GWs we have observed. The gh#57 tiers were fit against a full 5-GW
   // window, where an average below 10 minutes really does mean "not playing".
   // Early in a season there may be a single observation, and one rotated or
-  // rested appearance is not evidence of that — applying the full 90% write-down
+  // rested appearance is not evidence of that, applying the full 90% write-down
   // off n=1 crushed 269 available players at GW2 2026-27.
   //
   // Ramp the penalty in linearly over that same 5-GW window, so it reaches FULL
@@ -198,7 +198,7 @@
   }
 
   // Poisson upper-tail probability: P(X >= k) for a count with mean lambda.
-  // Used for the DefCon EV term — a player averaging `lambda` defensive actions
+  // Used for the DefCon EV term, a player averaging `lambda` defensive actions
   // per 90 clears the +2 threshold `k` with this probability. Summed
   // iteratively (term_i = term_{i-1} * lambda/i) so it stays stable for the
   // small k we use.
@@ -521,7 +521,7 @@
 
     // DefCon EV (2024-25+ scoring): +2 pts when a player's defensive-action
     // count clears the match threshold (DEF: 10 CBIT, MID/FWD: 12 CBIRT).
-    // Live-only — gated on the season-total `defensive_contribution`, which FPL
+    // Live-only, gated on the season-total `defensive_contribution`, which FPL
     // bootstrap carries but historical Vaastav backtest data does not, so this
     // term is silently zero in every backtest.
     // Primary path (gh#42): an empirical per-match hit-rate measured from real
